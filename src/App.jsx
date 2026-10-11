@@ -2,11 +2,12 @@ import { useState } from "react";
 import StaffingOverview from "./components/staffing/StaffingOverview";
 import ScheduleForm from "./components/schedules/ScheduleForm";
 import ScheduleQueue from "./components/schedules/ScheduleQueue";
+import StaffingRequirementForm from "./components/staffing/StaffingRequirementForm";
 
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleScheduleSaved = () => {
+  const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
   };
 
@@ -18,7 +19,6 @@ function App() {
         padding: "32px 16px",
       }}
     >
-      {/* Header Container */}
       <header
         style={{
           maxWidth: "1280px",
@@ -30,44 +30,21 @@ function App() {
           border: "1px solid #e2e8f0",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div
-            style={{
-              background: "#2563eb",
-              color: "white",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              fontWeight: "bold",
-              fontSize: "14px",
-            }}
-          >
-            WFM
-          </div>
-          <div>
-            <h1
-              style={{
-                fontSize: "22px",
-                fontWeight: "bold",
-                color: "#0f172a",
-                margin: 0,
-              }}
-            >
-              Workforce Management (WFM)
-            </h1>
-            <p
-              style={{
-                fontSize: "13px",
-                color: "#64748b",
-                margin: "2px 0 0 0",
-              }}
-            >
-              Forecasting & Scheduling Module — Admin Portal
-            </p>
-          </div>
-        </div>
+        <h1
+          style={{
+            fontSize: "22px",
+            fontWeight: "bold",
+            color: "#0f172a",
+            margin: 0,
+          }}
+        >
+          Workforce Management (WFM)
+        </h1>
+        <p style={{ fontSize: "13px", color: "#64748b", margin: "2px 0 0 0" }}>
+          Forecasting & Scheduling Module — Admin Portal
+        </p>
       </header>
 
-      {/* Main Dashboard Grid */}
       <main
         style={{
           maxWidth: "1280px",
@@ -78,17 +55,15 @@ function App() {
           alignItems: "start",
         }}
       >
-        {/* Left Column: Form */}
         <div>
-          <ScheduleForm onScheduleSaved={handleScheduleSaved} />
+          <ScheduleForm onScheduleSaved={handleRefresh} />
+          <StaffingRequirementForm onRequirementSaved={handleRefresh} />
         </div>
-
-        {/* Right Column: Table Overview & Active Queue */}
         <div>
           <StaffingOverview key={refreshKey} />
           <ScheduleQueue
             key={`queue-${refreshKey}`}
-            onScheduleChanged={handleScheduleSaved}
+            onScheduleChanged={handleRefresh}
           />
         </div>
       </main>
