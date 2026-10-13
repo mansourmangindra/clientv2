@@ -5,6 +5,9 @@ export default function StaffingOverview() {
   const [requirements, setRequirements] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [sortField, setSortField] = useState("date");
+  const [sortOrder, setSortOrder] = useState("asc");
+
   useEffect(() => {
     let isMounted = true;
 
@@ -29,6 +32,42 @@ export default function StaffingOverview() {
       isMounted = false;
     };
   }, []);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortedRequirements = [...requirements].sort((a, b) => {
+    let aValue = a[sortField];
+    let bValue = b[sortField];
+
+    if (sortField === "date") {
+      aValue = new Date(aValue).getTime();
+      bValue = new Date(bValue).getTime();
+    } else if (sortField === "timePeriod") {
+      const [aStart] = aValue.split("-");
+      const [bStart] = bValue.split("-");
+      aValue = aStart;
+      bValue = bStart;
+    } else if (
+      sortField === "requiredAgents" ||
+      sortField === "scheduledAgents"
+    ) {
+      aValue = Number(aValue);
+      bValue = Number(bValue);
+    }
+
+    if (sortOrder === "asc") {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
+    }
+  });
 
   if (loading) {
     return (
@@ -55,12 +94,31 @@ export default function StaffingOverview() {
         <table className="min-w-full divide-y divide-slate-200 text-left">
           <thead className="bg-slate-50 text-slate-600 uppercase text-xs tracking-wider">
             <tr>
-              <th className="px-6 py-3.5 font-semibold">Date</th>
-              <th className="px-6 py-3.5 font-semibold">Time Period</th>
-              <th className="px-6 py-3.5 font-semibold text-center">
-                Required
+              <th
+                onClick={() => handleSort("date")}
+                style={{ cursor: "pointer", userSelect: "none" }}
+                className="px-6 py-3.5 font-semibold"
+              >
+                Date{" "}
+                {sortField === "date" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
               </th>
-              <th className="px-6 py-3.5 font-semibold text-center">
+              <th
+                onClick={() => handleSort("timePeriod")}
+                style={{ cursor: "pointer", userSelect: "none" }}
+                className="px-6 py-3.5 font-semibold"
+              >
+                Time Period{" "}
+                {sortField === "timePeriod"
+                  ? sortOrder === "asc"
+                    ? "▲"
+                    : "▼"
+                  : ""}
+              </th>
+              <th
+                onClick={() => handleSort("requiredAgents")}
+                style={{ cursor: "pointer", userSelect: "none" }}
+                className="px-6 py-3.5 font-semibold text-center"
+              >
                 Scheduled
               </th>
               <th className="px-6 py-3.5 font-semibold text-center">Gap</th>
@@ -68,7 +126,7 @@ export default function StaffingOverview() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-sm">
-            {requirements.map((req) => {
+            {sortedRequirements.map((req) => {
               const gap = req.requiredAgents - req.scheduledAgents;
               const isUnderstaffed = gap > 0;
               const isOverstaffed = gap < 0;

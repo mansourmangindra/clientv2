@@ -109,7 +109,7 @@ export default function ScheduleQueue({ refreshKey, onScheduleChanged }) {
               schedules.map((sch) => (
                 <tr key={sch.id}>
                   <td style={{ fontWeight: "500" }}>#{sch.id}</td>
-                  <td>Agent #{sch.agentId}</td>
+                  <td>{sch.userDetail.name}</td>
                   <td>{sch.date}</td>
                   <td style={{ fontFamily: "monospace" }}>{sch.startTime}</td>
                   <td style={{ fontFamily: "monospace" }}>{sch.endTime}</td>
